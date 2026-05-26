@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import auth from '../../middlewares/auth';
+import { SupplierControllers } from './supplier.controller';
+const router = Router();
+router.get('/',     auth('user','admin'), SupplierControllers.getSuppliers);
+router.get('/:id',  auth('user','admin'), SupplierControllers.getSupplier);
+router.post('/',    auth('user','admin'), SupplierControllers.createSupplier);
+router.patch('/:id',auth('user','admin'), SupplierControllers.updateSupplier);
+router.delete('/:id',auth('user','admin'),SupplierControllers.deleteSupplier);
+export const SupplierRoutes = router;

@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import auth from '../../middlewares/auth';
+import { CustomerControllers } from './customer.controller';
+const router = Router();
+router.get('/',             auth('user','admin'), CustomerControllers.getCustomers);
+router.get('/:id',          auth('user','admin'), CustomerControllers.getCustomer);
+router.get('/:id/statement',auth('user','admin'), CustomerControllers.getStatement);
+router.post('/',            auth('user','admin'), CustomerControllers.createCustomer);
+router.patch('/:id',        auth('user','admin'), CustomerControllers.updateCustomer);
+router.delete('/:id',       auth('user','admin'), CustomerControllers.deleteCustomer);
+export const CustomerRoutes = router;

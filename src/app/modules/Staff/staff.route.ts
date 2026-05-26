@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import auth from '../../middlewares/auth';
+import { StaffControllers } from './staff.controller';
+const router = Router();
+router.get('/',                   auth('user','admin'), StaffControllers.getStaff);
+router.get('/:id',                auth('user','admin'), StaffControllers.getStaffMember);
+router.post('/',                  auth('user','admin'), StaffControllers.createStaff);
+router.patch('/:id',              auth('user','admin'), StaffControllers.updateStaff);
+router.patch('/:id/permissions',  auth('user','admin'), StaffControllers.updateStaffPermissions);
+router.delete('/:id',             auth('user','admin'), StaffControllers.deleteStaff);
+export const StaffRoutes = router;

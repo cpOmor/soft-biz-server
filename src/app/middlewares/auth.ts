@@ -57,7 +57,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
 
     // Attach full user information to the request object
-    req.user = { ...decoded, role, email, id: decoded.id, shopId: (user as any).shopId };
+    req.user = { ...decoded, role, email, id: decoded.id, shopId: decoded.id };
 
     next();
   });

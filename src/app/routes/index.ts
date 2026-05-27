@@ -10,6 +10,7 @@ import { TaskRoutes }         from '../modules/Task/task.route';
 import { StaffRoutes }        from '../modules/Staff/staff.route';
 import { DashboardRoutes }    from '../modules/Dashboard/dashboard.route';
 import { SubscriptionRoutes } from '../modules/Subscription/subscription.route';
+import { ThemeRoutes }        from '../modules/Theme/theme.route';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ const moduleRoutes = [
   { path: '/staff',         route: StaffRoutes },
   { path: '/dashboard',     route: DashboardRoutes },
   { path: '/subscriptions', route: SubscriptionRoutes },
+  { path: '/themes',        route: ThemeRoutes },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

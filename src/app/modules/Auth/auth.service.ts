@@ -9,13 +9,13 @@ import config, {
   jwt_refresh_expires_in,
 } from '../../config';
 import AppError from '../../errors/AppError';
-import { TLoginUser, TProfile, TUser, TVerification } from './auth.interface';
+import { TProfile, TUser, TVerification } from './auth.interface';
 import { forbidden, notFound, serverError } from '../../utils/errorfunc';
-import { createToken, verifyToken } from '../../utils/utils'; 
+import { createToken, verifyToken } from '../../utils/utils';
 import { generateUniqueCode } from '../../utils/generateUniqueCode';
 import { TEmailInfo } from '../../utils/utils.interface';
 import sendEmail from '../../utils/sendEmail';
-import { UserStatus } from './auth.utils';
+import { USER_ROLE, UserStatus } from './auth.utils';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { Profile, User } from './auth.model';
 
@@ -24,7 +24,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   if (!user) {
     throw notFound('User not found!');
   }
-  
+
   // checking if the user is already deleted
   const isPasswordMatched = await bcrypt.compare(
     payload.password,
@@ -44,10 +44,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
     throw forbidden('Please provide the correct password.');
   }
 
-  
   const isProfile = await Profile.findOne({ email: user?.email });
 
-  
   if (isProfile === null) {
     throw forbidden('Something was wrong.');
   }
@@ -55,7 +53,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   await user.save();
 
   const jwtPayload = {
-    email: user?.email, 
+    email: user?.email,
     fullName: isProfile?.fullName,
     phone: isProfile?.phone,
     id: String(user?._id),
@@ -93,7 +91,13 @@ const loginUser = async (payload: { email: string; password: string }) => {
       shopId: (user as any).shopId || '',
     },
     shop: shop
-      ? { _id: String((shop as any)._id), name: (shop as any).name, slug: (shop as any).slug, currency: (shop as any).currency }
+      ? {
+          _id: String((shop as any)._id),
+          name: (shop as any).name,
+          slug: (shop as any).slug,
+          currency: (shop as any).currency,
+          selectedThemeId: (shop as any).selectedThemeId || '',
+        }
       : null,
   };
 };
@@ -183,7 +187,6 @@ const refreshToken = async (req: any, res: any) => {
 };
 
 const forgerPassword = async (email: string) => {
-  
   const user: TUser | null = await User.findOne({ email });
   if (!user) {
     throw notFound('User not found!');
@@ -264,14 +267,13 @@ const forgerPassword = async (email: string) => {
     subject: 'Verify OTP to Change Password',
   };
 
-  
   const expired = new Date();
   expired.setMinutes(expired.getMinutes() + 2);
 
   await User.findOneAndUpdate(
-      { email },
-      { emailVerification: { code, verification, expired } },
-    );
+    { email },
+    { emailVerification: { code, verification, expired } },
+  );
   // const sentMail = await sendEmail(emailData);
 
   // const sentMail = true;
@@ -284,7 +286,6 @@ const forgerPassword = async (email: string) => {
 
   return body;
 };
-
 
 const verification = async (payload: TVerification) => {
   const user = await User.findOne({ email: payload.email }).select(
@@ -361,7 +362,7 @@ const verificationForgetPassword = async (payload: {
 
   return { validation };
 };
- 
+
 const verificationCodeReSend = async (payload: TUser & TProfile) => {
   const code = generateUniqueCode(6);
   const expired = new Date();
@@ -450,7 +451,6 @@ const verificationCodeReSend = async (payload: TUser & TProfile) => {
   }
 };
 const setNewPassword = async (token: string, password: string) => {
-  
   const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   const { email } = decoded;
@@ -493,7 +493,7 @@ const setNewPassword = async (token: string, password: string) => {
   return '';
 };
 
-const changePassword = async (req: any) => { 
+const changePassword = async (req: any) => {
   const token = req.cookies.refreshToken;
   if (!token) {
     throw forbidden('Something went wrong');
@@ -505,16 +505,13 @@ const changePassword = async (req: any) => {
     config.jwt_access_secret as string,
   ) as JwtPayload;
 
-
-
   //hash new password
   const hashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcrypt_salt_rounds),
   );
 
-
-// update user password
+  // update user password
   await User.findOneAndUpdate(
     {
       email: decoded.email,
@@ -526,9 +523,8 @@ const changePassword = async (req: any) => {
   );
 };
 
-
 const getMe = async (id: string) => {
-  console.log(id)
+  console.log(id);
   const user = await User.findById(id)
     .populate('profileId')
     .select('-verification');
@@ -542,7 +538,6 @@ const getMe = async (id: string) => {
 
   return { ...profileId, email, ...restUserData };
 };
-
 
 // Update an existing user
 const updateMe = async (req: any) => {
@@ -587,7 +582,6 @@ const updateMe = async (req: any) => {
   return updatedUser;
 };
 
-
 // Delete a user
 const deleteMe = async (id: string) => {
   const deletedUser = await User.findByIdAndDelete(id);
@@ -607,10 +601,14 @@ const registerUser = async (payload: {
 }) => {
   const exists = await User.findOne({ email: payload.email });
   if (exists) {
-    throw new AppError(409, 'Email already registered.', [{ path: 'email', message: 'Email already registered.' }]);
+    throw new AppError(409, 'Email already registered.', [
+      { path: 'email', message: 'Email already registered.' },
+    ]);
   }
 
-  const { hashedPassword: hashPw } = await import('../../utils/hashedPassword').then(m => ({ hashedPassword: m.hashedPassword }));
+  const { hashedPassword: hashPw } = await import(
+    '../../utils/hashedPassword'
+  ).then((m) => ({ hashedPassword: m.hashedPassword }));
   const password = await hashPw(payload.password);
 
   const newProfile: TProfile = {
@@ -626,7 +624,7 @@ const registerUser = async (payload: {
     profileId: userProfile._id,
     email: payload.email,
     userName: payload.email,
-    role: 'user',
+    role: USER_ROLE.shop_owner,
     password,
     rememberPassword: false,
     status: UserStatus.inProgress,
@@ -634,7 +632,8 @@ const registerUser = async (payload: {
 
   const { Shop } = await import('../Shop/shop.model');
   const shopName = payload.shopName || `${payload.name}'s Shop`;
-  const shopSlug = shopName.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+  const shopSlug =
+    shopName.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
   const shop = await Shop.create({
     name: shopName,
     slug: shopSlug,

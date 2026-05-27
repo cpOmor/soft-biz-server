@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import auth from '../../middlewares/auth';
 import { TaskControllers } from './task.controller';
+import { USER_ROLE } from '../Auth/auth.utils';
 const router = Router();
-router.get('/',     auth('user','admin'), TaskControllers.getTasks);
-router.post('/',    auth('user','admin'), TaskControllers.createTask);
-router.patch('/:id',auth('user','admin'), TaskControllers.updateTask);
-router.delete('/:id',auth('user','admin'),TaskControllers.deleteTask);
+router.get('/',     auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), TaskControllers.getTasks);
+router.post('/',    auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), TaskControllers.createTask);
+router.patch('/:id',auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), TaskControllers.updateTask);
+router.delete('/:id',auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin),TaskControllers.deleteTask);
 export const TaskRoutes = router;

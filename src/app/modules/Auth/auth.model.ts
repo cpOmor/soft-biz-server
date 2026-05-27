@@ -24,7 +24,7 @@ const userSchema = new Schema<TUser & TProfile>(
     role: {
       type: String,
       enum: Object.values(USER_ROLE),
-      default: USER_ROLE.user,
+      default: USER_ROLE.shop_owner,
       trim: true,
     },
     status: {

@@ -13,6 +13,7 @@ const shopSchema = new Schema(
     invoiceStyle:    { type: String, enum: ['minimal','classic','modern'], default: 'minimal' },
     subscriptionPlan:{ type: String, enum: ['free','basic','premium'], default: 'free' },
     planExpiresAt:   { type: Date, default: null },
+    selectedThemeId: { type: String, default: '' },
   },
   { timestamps: true },
 );

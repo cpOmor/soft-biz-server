@@ -13,7 +13,7 @@ router.post('/sign-up', UserControllers.createUser);
 // Get all users
 router.get(
   '/students',
-  auth(USER_ROLE.admin, USER_ROLE.user),
+  auth(USER_ROLE.super_admin, USER_ROLE.shop_owner),
   UserControllers.getUsers,
 );
 

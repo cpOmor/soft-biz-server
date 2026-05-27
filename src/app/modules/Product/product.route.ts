@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import auth from '../../middlewares/auth';
 import { ProductControllers } from './product.controller';
+import { USER_ROLE } from '../Auth/auth.utils';
 const router = Router();
-router.get('/',    auth('user','admin'), ProductControllers.getProducts);
-router.get('/:id', auth('user','admin'), ProductControllers.getProduct);
-router.post('/',   auth('user','admin'), ProductControllers.createProduct);
-router.patch('/:id',auth('user','admin'), ProductControllers.updateProduct);
-router.delete('/:id',auth('user','admin'),ProductControllers.deleteProduct);
+router.get('/',    auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), ProductControllers.getProducts);
+router.get('/:id', auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), ProductControllers.getProduct);
+router.post('/',   auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), ProductControllers.createProduct);
+router.patch('/:id',auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin), ProductControllers.updateProduct);
+router.delete('/:id',auth(USER_ROLE.shop_owner,  USER_ROLE.super_admin),ProductControllers.deleteProduct);
 export const ProductRoutes = router;

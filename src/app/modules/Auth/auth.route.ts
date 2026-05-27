@@ -108,7 +108,7 @@ router.put(
  */
 router.put(
   '/change-password',
-  auth(USER_ROLE.admin, USER_ROLE.user, ),
+  auth(USER_ROLE.super_admin, USER_ROLE.shop_owner, ),
   AuthControllers.changePassword,
 );
 
@@ -121,7 +121,7 @@ router.put(
  * The user data is restructured to include profile information directly in the response.
  */
 router.get('/get-me', 
-  // auth(USER_ROLE.admin, USER_ROLE.user), 
+  // auth(USER_ROLE.super_admin, USER_ROLE.shop_owner), 
   AuthControllers.getMe);
 
 
@@ -137,7 +137,7 @@ router.put(
     req.body = JSON.parse(req.body.data);
     next();
   },
-  auth(USER_ROLE.admin, USER_ROLE.user),
+  auth(USER_ROLE.super_admin, USER_ROLE.shop_owner),
   AuthControllers.updateMe,
 );
 
@@ -148,7 +148,7 @@ router.put(
  * It expects a request parameter with the user's ID to be deleted.
  */
 router.delete('/delete-me', 
-  auth(USER_ROLE.admin, USER_ROLE.user), 
+  auth(USER_ROLE.super_admin, USER_ROLE.shop_owner), 
 AuthControllers.deleteMe);
 
 

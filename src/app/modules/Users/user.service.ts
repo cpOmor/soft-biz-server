@@ -12,7 +12,7 @@ import { TProfile, TUser } from '../Auth/auth.interface';
 
 const getUsers = async (req: IMyRequest) => {
   const queryBuilder = new QueryBuilder(
-    User.find({ role: USER_ROLE.user }).populate('profileId'),
+    User.find({ role: USER_ROLE.shop_owner }).populate('profileId'),
     req.query,
   )
     .filter()
@@ -62,7 +62,7 @@ const createUser = async (payload: TUser & TProfile) => {
   const newUserInfo: TUser = {
     profileId: userProfile._id as Schema.Types.ObjectId,
     email: payload.email as string,
-    role: USER_ROLE.user,
+    role: USER_ROLE.shop_owner,
     userName: payload?.userName,
     password,
     rememberPassword: false,

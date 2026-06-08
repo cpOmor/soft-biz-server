@@ -96,7 +96,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
           name: (shop as any).name,
           slug: (shop as any).slug,
           currency: (shop as any).currency,
-          selectedThemeId: (shop as any).selectedThemeId || '',
         }
       : null,
   };
